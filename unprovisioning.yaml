@@ -1,0 +1,35 @@
+---
+- hosts: all
+  tasks:
+    - name: "APT Remove"
+      apt:
+        name:
+          - php-curl
+          - php-gd
+          - php-mbstring
+          - php-xml
+          - php-xmlrpc
+          - php-soap
+          - php-intl
+          - php-zip
+          - php
+          - libapache2-mod-php
+          - php-mysql
+          - apache2mysql-server
+          - mysql-client
+          - python3-mysqldb
+          - libmysqlclient-dev
+        state: absent
+        autoremove: yes
+        purge: yes
+      become: yes
+
+    - name: "Remove tmp Files"
+      ansible.builtin.file:
+        path: /tmp/wordpress.tar.gz
+        state: absent
+
+    - name: "Remove WWW Files"
+      ansible.builtin.file:
+        path: /var/www/wordpress
+        state: absent
