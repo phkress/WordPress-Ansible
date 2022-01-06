@@ -1,17 +1,20 @@
 ---
-- hosts: all
+- hosts: database
+  handlers:
+    - name: "Restart Mysql"
+      service:
+        name: mysql
+        state: restarted
+      become: yes
+
   tasks:
-    - name: "APT Install basic packets"
+    - name: "APT Install Mysql"
       apt:
         name:
           - mysql-server
           - mysql-client
           - python3-mysqldb
           - libmysqlclient-dev
-          - apache2
-          - php
-          - libapache2-mod-php
-          - php-mysql
         state: present
       become: yes
 
@@ -23,11 +26,42 @@
 
     - name: "Mysql create user"
       mysql_user:
+        host:
+          - localhost
+          - 127.0.0.1
+          - 192.168.12.124
         login_user: root
         name: wordpress_user
         password: 12345
         priv: "wordpress_db.*:ALL"
         state: present
+
+- hosts: wordpress
+  handlers:
+    - name: "Restart Apache"
+      service:
+        name: apache2
+        state: restarted
+      become: yes
+
+  tasks:
+    - name: "APT Install basic packets PHP and Apache"
+      apt:
+        name:
+          - php-curl
+          - php-gd
+          - php-mbstring
+          - php-xml
+          - php-xmlrpc
+          - php-soap
+          - php-intl
+          - php-zip
+          - php
+          - libapache2-mod-php
+          - php-mysql
+          - apache2
+        state: present
+      become: yes
 
     - name: "Download latest Wordpress"
       get_url:
@@ -57,10 +91,13 @@
         - { regex: "database_name_here", value: "wordpress_db" }
         - { regex: "username_here", value: "wordpress_user" }
         - { regex: "password_here", value: "12345" }
+        - { regex: "localhost", value: "192.168.12.124" }
       become: yes
 
-    - name: "Wordpress configuring Apache for access wordpress"
+    - name: "Wordpress configuring Apache for access"
       copy:
         src: "files/000-default.conf"
         dest: "/etc/apache2/sites-available/000-default.conf"
       become: yes
+      notify:
+        - Restart Apache
