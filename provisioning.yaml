@@ -29,7 +29,7 @@
         host:
           - localhost
           - 127.0.0.1
-          - 192.168.12.124
+          - "{{ hostvars.wordpress.ansible_host }}"
         login_user: root
         name: wordpress_user
         password: 12345
@@ -91,7 +91,7 @@
         - { regex: "database_name_here", value: "wordpress_db" }
         - { regex: "username_here", value: "wordpress_user" }
         - { regex: "password_here", value: "12345" }
-        - { regex: "localhost", value: "192.168.12.124" }
+        - { regex: "localhost", value: "{{ hostvars.database.ansible_host }}" }
       become: yes
 
     - name: "Wordpress configuring Apache for access"

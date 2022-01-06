@@ -1,5 +1,5 @@
 [wordpress]
-192.168.12.123 ansible_user=root ansible_ssh_private_key_file="~/.ssh/id_rsa.pub"
+wordpress ansible_host=192.168.12.123 ansible_user=root ansible_ssh_private_key_file="~/.ssh/id_rsa.pub"
 
 [database]
-192.168.12.124 ansible_user=root ansible_ssh_private_key_file="~/.ssh/id_rsa.pub"
+database ansible_host=192.168.12.124 ansible_user=root ansible_ssh_private_key_file="~/.ssh/id_rsa.pub"
