@@ -1,0 +1,33 @@
+---
+- name: "APT Install Mysql"
+  apt:
+    name:
+      - mysql-server
+      - mysql-client
+      - python3-mysqldb
+      - libmysqlclient-dev
+    state: present
+  become: yes
+
+- name: "MySQL create database"
+  mysql_db:
+    name: "{{ wp_db_name }}"
+    login_user: root
+    state: present
+
+- name: "MySQL create user"
+  mysql_user:
+    host: "%"
+    login_user: root
+    name: "{{ wp_db_user }}"
+    password: '12345'
+    priv: "{{ wp_db_name }}.*:ALL"
+    state: present
+
+- name: "MySQL Config Access"
+  copy:
+    src: "files/mysqld.cnf"
+    dest: "{{ mysql_dir }}/mysqld.cnf"
+  become: yes
+  notify:
+    - Restart Mysql

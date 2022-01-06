@@ -1,0 +1,26 @@
+---
+- name: "APT Install basic packets PHP and Apache"
+  apt:
+    name:
+      - php-curl
+      - php-gd
+      - php-mbstring
+      - php-xml
+      - php-xmlrpc
+      - php-soap
+      - php-intl
+      - php-zip
+      - php
+      - libapache2-mod-php
+      - php-mysql
+      - apache2
+    state: present
+  become: yes
+  
+- name: "Apache configuring Wordpress for access"
+  template:
+    src: "templates/000-default.conf.j2"
+    dest: "{{ apache_site_dir }}/000-default.conf"
+  become: yes
+  notify:
+    - Restart Apache
