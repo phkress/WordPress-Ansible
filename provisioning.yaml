@@ -24,17 +24,22 @@
         login_user: root
         state: present
 
-    - name: "Configurando usuario Mysql"
+    - name: "MySQL create user"
       mysql_user:
-        host:
-          - "{{ hostvars.wordpress.ansible_host }}"
-          - 127.0.0.1
-          - localhost
+        host: "%"
         login_user: root
         name: "{{ wp_db_user }}"
         password: 12345
         priv: "{{ wp_db_name }}.*:ALL"
         state: present
+
+    - name: "MySQL Config Access"
+      copy:
+        src: "files/mysqld.cnf"
+        dest: "{{ mysql_dir }}/mysqld.cnf"
+      become: yes
+      notify:
+        - Restart Mysql
 
 - hosts: wordpress
   handlers:
@@ -95,9 +100,9 @@
       become: yes
 
     - name: "Wordpress configuring Apache for access"
-      copy:
-        src: "files/000-default.conf"
-        dest: "/etc/apache2/sites-available/000-default.conf"
+      template:
+        src: "templates/000-default.conf.j2"
+        dest: "{{ apache_site_dir }}/000-default.conf"
       become: yes
       notify:
         - Restart Apache
